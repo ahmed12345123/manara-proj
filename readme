@@ -1,0 +1,49 @@
+Scalable and Secure AWS Architecture for Web Applications
+
+Designing a secure, scalable, and highly available architecture in AWS requires careful placement of each component within the Virtual Private Cloud (VPC) to enforce security boundaries, ensure performance, and provide operational visibility. The following describes an enterprise-grade solution that integrates multiple AWS services in a layered approach.
+
+1. Edge Security and Content Delivery
+
+At the entry point of the architecture, AWS CloudFront is deployed as the global content delivery network (CDN). CloudFront caches static and dynamic content closer to end users, improving performance while reducing the load on downstream resources. Integrated with CloudFront is AWS WAF (Web Application Firewall), which provides an additional layer of protection against common web exploits such as SQL injection, cross-site scripting (XSS), and DDoS attempts. Together, CloudFront and WAF serve as the first line of defense.
+
+2. Public Access Layer
+
+Behind CloudFront and WAF, traffic is routed into the VPC through an Internet Gateway (IGW). The IGW allows controlled inbound and outbound access for resources in public subnets.
+
+Within the public subnets, a Public Application Load Balancer (ALB) operates across two Availability Zones for fault tolerance. The ALB terminates client connections and forwards requests to the appropriate compute resources. The security group attached to the ALB allows only HTTPS traffic from CloudFront, ensuring that all external requests are inspected by WAF before reaching the application layer.
+
+3. Front-End Tier
+
+The Public ALB forwards traffic to a fleet of EC2 instances in Auto Scaling Groups deployed across multiple Availability Zones. These EC2 instances, located in the public subnets, host the front-end application code (such as React or Angular). Auto Scaling ensures elasticity by automatically adjusting the number of instances based on demand, while spreading instances across AZs improves high availability.
+
+4. Private Application Layer
+
+The front-end tier communicates with a Private Application Load Balancer, which is deployed in private subnets spanning multiple Availability Zones. This ALB serves as the entry point for the back-end application layer. By placing the ALB in private subnets, it is not exposed directly to the internet, ensuring that only traffic coming from the front-end tier is allowed.
+
+The private ALB routes requests to a pool of EC2 instances in private subnets, which host the back-end application logic (e.g., Node.js, Java, or Python services). These instances are protected by restrictive security groups that only permit traffic from the private ALB, blocking all direct external access.
+
+5. Database Layer
+
+For persistent data storage, the back-end layer communicates with Amazon RDS (e.g., MySQL or PostgreSQL) deployed in private subnets. Placing RDS in private subnets ensures that the database cannot be accessed directly from the internet. Security groups are configured to only allow inbound connections from the back-end EC2 instances. Additionally, Multi-AZ deployments are enabled for high availability, with automated failover in case of primary instance failure.
+
+6. Monitoring, Logging, and Notifications
+
+Amazon CloudWatch continuously monitors application performance, system metrics, and logs from the EC2 instances in both front-end and back-end tiers. CloudWatch has the required IAM permissions to trigger automated responses. For example, when thresholds are breached, CloudWatch can publish messages to Amazon SNS (Simple Notification Service) to notify administrators via email or SMS, ensuring real-time incident awareness.
+
+7. Security Controls
+
+Security across the architecture is enforced using multiple layers:
+
+AWS WAF filters malicious traffic at the edge.
+
+CloudFront provides DDoS mitigation and encryption in transit.
+
+Security Groups restrict inbound and outbound communication between tiers.
+
+IAM roles and policies enforce least-privilege access for CloudWatch, EC2, and RDS.
+
+Private subnets prevent direct exposure of sensitive resources like the back-end and RDS.
+
+8. High Availability and Scalability
+
+The architecture is distributed across two Availability Zones to withstand failures. Auto Scaling ensures dynamic scaling of the front-end and back-end tiers, while RDS Multi-AZ ensures high availability for the database. CloudFront and ALBs further enhance scalability by distributing traffic efficiently across resources.
