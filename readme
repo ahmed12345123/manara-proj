@@ -2,7 +2,7 @@ Scalable and Secure AWS Architecture for Web Applications
 
 Designing a secure, scalable, and highly available architecture in AWS requires careful placement of each component within the Virtual Private Cloud (VPC) to enforce security boundaries, ensure performance, and provide operational visibility. The following describes an enterprise-grade solution that integrates multiple AWS services in a layered approach.
 
-network . there is six subnets each avalabilty zone has three , two private and one publice its not visible in the diagram and the security groups
+0. network note : there is six subnets each avalabilty zone has three , two private and one publice its not visible in the diagram and the security groups as well
 
 1. Edge Security and Content Delivery
 
