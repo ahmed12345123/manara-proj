@@ -1,3 +1,7 @@
+********************updated version*******************************
+
+
+
 Scalable and Secure AWS Architecture for Web Applications
 
 Designing a secure, scalable, and highly available architecture in AWS requires careful placement of each component within the Virtual Private Cloud (VPC) to enforce security boundaries, ensure performance, and provide operational visibility. The following describes an enterprise-grade solution that integrates multiple AWS services in a layered approach.
